@@ -27,5 +27,4 @@ public class CartaoController {
         BigDecimal saldo = cartaoService.consultaSaldo(numeroCartao);
         return ResponseEntity.status(200).body(saldo);
     }
-
 }

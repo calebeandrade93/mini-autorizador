@@ -20,24 +20,20 @@ public class TransacaoService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private CartaoService cartaoService;
+
     @Transactional
     public void processarTransacao(TransacaoDTO transacaoDTO){
-        Cartao cartao = validarDadosCartao(transacaoDTO);
+
+        Cartao cartao = cartaoRepository.findByIdLock(transacaoDTO.numeroCartao()).orElseThrow(() -> new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
+        cartaoService.validarSenha(cartao, transacaoDTO.senhaCartao());
+
         if(cartao.getSaldo().compareTo(transacaoDTO.valor()) < 0){
             throw new SaldoInsuficienteException("SALDO_INSUFICIENTE");
         }
 
         cartao.setSaldo(cartao.getSaldo().subtract(transacaoDTO.valor()));
         cartaoRepository.save(cartao);
-
     }
-
-    private Cartao validarDadosCartao(TransacaoDTO transacaoDTO){
-        Cartao cartao = cartaoRepository.findById(transacaoDTO.numeroCartao()).orElseThrow(() -> new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
-        if (!passwordEncoder.matches(transacaoDTO.senhaCartao(), cartao.getSenha())) {
-            throw new SenhaDoCartaoInvalidaException("SENHA_INVALIDA");
-        }
-        return cartao;
-    }
-
 }

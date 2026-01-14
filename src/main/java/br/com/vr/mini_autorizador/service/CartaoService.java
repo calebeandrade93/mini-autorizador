@@ -4,6 +4,7 @@ import br.com.vr.mini_autorizador.dto.CartaoDTO;
 import br.com.vr.mini_autorizador.entity.Cartao;
 import br.com.vr.mini_autorizador.exceptions.CartaoExistenteException;
 import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontradoException;
+import br.com.vr.mini_autorizador.exceptions.SenhaDoCartaoInvalidaException;
 import br.com.vr.mini_autorizador.repository.CartaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -35,7 +36,13 @@ public class CartaoService {
     }
 
     public BigDecimal consultaSaldo(String numeroCartao){
-        Cartao cartao = repository.findById(numeroCartao).orElseThrow(() -> new CartaoNaoEncontradoException("Cartão não encontrado"));
+        Cartao cartao = repository.findById(numeroCartao).orElseThrow(() -> new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
         return cartao.getSaldo();
+    }
+
+    public void validarSenha(Cartao cartao, String senhaInformada){
+        if (!passwordEncoder.matches(senhaInformada, cartao.getSenha())) {
+            throw new SenhaDoCartaoInvalidaException("SENHA_INVALIDA");
+        }
     }
 }
