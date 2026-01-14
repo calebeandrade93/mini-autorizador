@@ -40,3 +40,5 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/miniautorizador
       SPRING_DATASOURCE_USERNAME: root
+      SPRING_SECURITY_USER_NAME: username
+      SPRING_SECURITY_USER_PASSWORD: password
