@@ -1,13 +1,14 @@
 package br.com.vr.mini_autorizador.exceptions;
 
+import br.com.vr.mini_autorizador.dto.CartaoDTO;
 import lombok.Getter;
 
 @Getter
 public class CartaoExistenteException extends RuntimeException {
 
-    private final String message;
+    private CartaoDTO cartaoDTO;
 
-    public CartaoExistenteException(String message) {
-         this.message = message;
+    public CartaoExistenteException(CartaoDTO cartaoDTO) {
+         this.cartaoDTO = cartaoDTO;
     }
 }

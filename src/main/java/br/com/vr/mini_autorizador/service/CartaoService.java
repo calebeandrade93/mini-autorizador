@@ -3,11 +3,14 @@ package br.com.vr.mini_autorizador.service;
 import br.com.vr.mini_autorizador.dto.CartaoDTO;
 import br.com.vr.mini_autorizador.entity.Cartao;
 import br.com.vr.mini_autorizador.exceptions.CartaoExistenteException;
+import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontrado;
 import br.com.vr.mini_autorizador.repository.CartaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 @Service
 public class CartaoService {
@@ -21,7 +24,7 @@ public class CartaoService {
     @Transactional //TODO: Verificar se é necessário
     public CartaoDTO novoCartao(CartaoDTO cartaoDTO) {
         return repository.findById(cartaoDTO.getNumeroCartao()).<CartaoDTO>map(cartaoExistente -> {
-            throw new CartaoExistenteException("Cartão já existente");
+            throw new CartaoExistenteException(cartaoDTO);
         }).orElseGet(() -> {
             Cartao novoCartao = new Cartao();
             novoCartao.setNumeroCartao(cartaoDTO.getNumeroCartao());
@@ -29,5 +32,10 @@ public class CartaoService {
             repository.save(novoCartao);
             return cartaoDTO;
         });
+    }
+
+    public BigDecimal consultaSaldo(String numeroCartao){
+        Cartao cartao = repository.findById(numeroCartao).orElseThrow(() -> new CartaoNaoEncontrado("Cartão não encontrado"));
+        return cartao.getSaldo();
     }
 }
