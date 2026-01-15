@@ -3,6 +3,7 @@ package br.com.vr.mini_autorizador.service;
 import br.com.vr.mini_autorizador.dto.CartaoDTO;
 import br.com.vr.mini_autorizador.entity.Cartao;
 import br.com.vr.mini_autorizador.exceptions.CartaoExistenteException;
+import br.com.vr.mini_autorizador.exceptions.CartaoInexistenteException;
 import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontradoException;
 import br.com.vr.mini_autorizador.exceptions.SenhaDoCartaoInvalidaException;
 import br.com.vr.mini_autorizador.repository.CartaoRepository;
@@ -79,10 +80,7 @@ class CartaoServiceTest {
         CartaoDTO dto = new CartaoDTO("0000000000000000", "senha123");
         when(repository.findById(dto.numeroCartao())).thenReturn(Optional.empty());
 
-        CartaoNaoEncontradoException exception = assertThrows(CartaoNaoEncontradoException.class, () ->
-                service.consultaSaldo(dto.numeroCartao()));
-
-        assertEquals("CARTAO_INEXISTENTE", exception.getMessage());
+        assertThrows(CartaoNaoEncontradoException.class, () -> service.consultaSaldo(dto.numeroCartao()));
         verify(repository, times(1)).findById(dto.numeroCartao());
     }
 

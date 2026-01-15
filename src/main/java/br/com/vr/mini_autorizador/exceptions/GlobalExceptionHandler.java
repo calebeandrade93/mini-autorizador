@@ -6,6 +6,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Optional;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -20,9 +22,14 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(422).body(ex.getCartaoDTO());
     }
 
+    @ExceptionHandler(CartaoInexistenteException.class)
+    public ResponseEntity<String> handleCartaoInexistente(CartaoInexistenteException ex) {
+        return ResponseEntity.status(422).body(ex.getMessage());
+    }
+
     @ExceptionHandler(CartaoNaoEncontradoException.class)
-    public ResponseEntity<String> handleCartaoNaoEncontrado(CartaoNaoEncontradoException ex) {
-        return ResponseEntity.status(404).body(ex.getMessage());
+    public ResponseEntity<?> handleCartaoNaoEncontrado() {
+        return ResponseEntity.status(404).build();
     }
 
     @ExceptionHandler(SenhaDoCartaoInvalidaException.class)

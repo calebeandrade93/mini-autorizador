@@ -1,6 +1,6 @@
 package br.com.vr.mini_autorizador.controller;
 import br.com.vr.mini_autorizador.dto.TransacaoDTO;
-import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontradoException;
+import br.com.vr.mini_autorizador.exceptions.CartaoInexistenteException;
 import br.com.vr.mini_autorizador.exceptions.SaldoInsuficienteException;
 import br.com.vr.mini_autorizador.exceptions.SenhaDoCartaoInvalidaException;
 import br.com.vr.mini_autorizador.service.TransacaoService;
@@ -55,11 +55,11 @@ class TransacaoControllerTest {
     }
 
     @Test
-    void realizarTransacao_deveRetornarStatus404CartaoNaoEncontrado() {
+    void realizarTransacao_deveRetornarStatus422CartaoInexistente() {
         TransacaoDTO transacaoDTO = new TransacaoDTO("0000000000000000", "senha1234", new BigDecimal("50.00"));
-        doThrow(new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"))
+        doThrow(new CartaoInexistenteException("CARTAO_INEXISTENTE"))
                 .when(transacaoService).processarTransacao(any(TransacaoDTO.class));
-        CartaoNaoEncontradoException exception = assertThrows(CartaoNaoEncontradoException.class, () -> {
+        CartaoInexistenteException exception = assertThrows(CartaoInexistenteException.class, () -> {
             transacaoController.realizarTransacao(transacaoDTO);
         });
 

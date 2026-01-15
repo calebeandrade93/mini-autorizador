@@ -2,9 +2,8 @@ package br.com.vr.mini_autorizador.service;
 
 import br.com.vr.mini_autorizador.dto.TransacaoDTO;
 import br.com.vr.mini_autorizador.entity.Cartao;
-import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontradoException;
+import br.com.vr.mini_autorizador.exceptions.CartaoInexistenteException;
 import br.com.vr.mini_autorizador.exceptions.SaldoInsuficienteException;
-import br.com.vr.mini_autorizador.exceptions.SenhaDoCartaoInvalidaException;
 import br.com.vr.mini_autorizador.repository.CartaoRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +54,7 @@ class TransacaoServiceTest {
 
         when(repository.findByIdLock("999")).thenReturn(Optional.empty());
 
-        CartaoNaoEncontradoException exception = assertThrows(CartaoNaoEncontradoException.class, () ->
+        CartaoInexistenteException exception = assertThrows(CartaoInexistenteException.class, () ->
                 service.processarTransacao(dto));
 
         verify(repository, never()).save(any());

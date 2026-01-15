@@ -2,6 +2,7 @@ package br.com.vr.mini_autorizador.controller;
 
 import br.com.vr.mini_autorizador.dto.CartaoDTO;
 import br.com.vr.mini_autorizador.exceptions.CartaoExistenteException;
+import br.com.vr.mini_autorizador.exceptions.CartaoInexistenteException;
 import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontradoException;
 import br.com.vr.mini_autorizador.service.CartaoService;
 import org.junit.jupiter.api.Test;
@@ -69,13 +70,12 @@ class CartaoControllerTest {
     void consultaSaldo_deveRetornar404_quandoCartaoInexistente() {
         String numeroCartao = "1234567891234567";
         when(cartaoService.consultaSaldo(numeroCartao))
-                .thenThrow(new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
+                .thenThrow(new CartaoNaoEncontradoException());
 
-        CartaoNaoEncontradoException exception = assertThrows(CartaoNaoEncontradoException.class, () -> {
+        assertThrows(CartaoNaoEncontradoException.class, () -> {
             controller.consultaSaldo(numeroCartao);
         });
 
-        assertEquals("CARTAO_INEXISTENTE", exception.getMessage());
         verify(cartaoService, times(1)).consultaSaldo(numeroCartao);
     }
 }

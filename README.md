@@ -17,11 +17,12 @@ uma empresa que oferece soluções que vão além dos benefícios tradicionais, 
 
 ## Diferenciais Técnicos
 Neste desafio, eu apliquei alguns dos conceitos e boas práticas que adqueri durante minha carreira, que são fundamentais para manter a qualidade e segurança da aplicação:
- - Consistência e Concorrência: Utilização de Pessimistc Locking via Query Nativa, para garantir que duas transações simultâneas não causem inconsistências nos dados durante a transação.
- - Segurança: Implementação de Basic Auth com Spring Security, isolamento de credenciais sensíveis utilizando variáveis de ambiente, e criptografia de senhas com BCrypt para proteger os dados dos usuários.
- - Validação Antecipada: Uso de Bean Validation, para garantir que os dados recebidos pela API estejam corretos antes de chegarem na camada de serviço.
- - Boas Práticas de Código: Utilizei conceitos de Clean Code, SOLID, Design Patterns e arquitetura de pastas.
- - Cobertura de Testes: Adicionei o Jacoco ao projeto para gerar o relatório de cobertura de testes.
+ - <b>Consistência e Concorrência</b>: Utilização de Pessimistc Locking via Query Nativa, para garantir que duas transações simultâneas não causem inconsistências nos dados durante a transação.
+ - <b>Segurança</b>: Implementação de Basic Auth com Spring Security, isolamento de credenciais sensíveis utilizando variáveis de ambiente, e criptografia de senhas com BCrypt para proteger os dados dos usuários.
+ - <b>Validação Antecipada</b>: Uso de Bean Validation, para garantir que os dados recebidos pela API estejam corretos antes de chegarem na camada de serviço.
+ - <b>Boas Práticas de Código</b>: Utilizei conceitos de Clean Code, SOLID e arquitetura de pastas.
+ - <b>Cobertura de Testes</b>: Adicionei o Jacoco ao projeto para gerar o relatório de cobertura de testes.
+ - <b>Esteira CI</b>: Configurei uma esteira CI no GitHub Actions que roda testes unitários com relatório JaCoCo disponível para download, e protegi a branch main exigindo PRs, simulando um ambiente corporativo.
 
 ## API Endpoints
 | Endpoint | Método | Descrição | Resposta Esperada | Erros Possíveis                                                                                     |
@@ -39,7 +40,7 @@ Para executar a aplicação, siga os passos abaixo:
 ```
 3. Navegue até o diretório raiz do projeto.
 4. Navegue até o diretório 'docker' ```cd ./docker``` 
-5. Execute o comando abaixo para iniciar os containers da aplicação e do banco de dados:
+5. Execute o comando abaixo para buildar e iniciar os containers da aplicação e do banco de dados:
 ```bash
  docker-compose up --build
    ```
@@ -48,8 +49,8 @@ Para executar a aplicação, siga os passos abaixo:
 8. (Opcional) Download da Collection para utilizar em um client de preferência(Postman/Insomnia), o arquivo se encontra na pasta 'collection' na raiz do projeto.
 
 ## Cobertura de testes
-Execute o comando abaixo para gerar o relatório de cobertura de testes:
+Execute o comando abaixo na raiz do projeto para gerar o relatório de cobertura de testes:
 ```bash
-./mvnw clean verify
+./mvn clean verify
 ```
 Após a execução, o relatório estará disponível em `target/site/jacoco/index.html`.

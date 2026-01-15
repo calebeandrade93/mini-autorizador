@@ -3,6 +3,7 @@ package br.com.vr.mini_autorizador.service;
 import br.com.vr.mini_autorizador.dto.CartaoDTO;
 import br.com.vr.mini_autorizador.entity.Cartao;
 import br.com.vr.mini_autorizador.exceptions.CartaoExistenteException;
+import br.com.vr.mini_autorizador.exceptions.CartaoInexistenteException;
 import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontradoException;
 import br.com.vr.mini_autorizador.exceptions.SenhaDoCartaoInvalidaException;
 import br.com.vr.mini_autorizador.repository.CartaoRepository;
@@ -22,7 +23,7 @@ public class CartaoService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @Transactional //TODO: Verificar se é necessário
+    @Transactional
     public CartaoDTO novoCartao(CartaoDTO cartaoDTO) {
         return repository.findById(cartaoDTO.numeroCartao()).<CartaoDTO>map(cartaoExistente -> {
             throw new CartaoExistenteException(cartaoDTO);
@@ -36,7 +37,7 @@ public class CartaoService {
     }
 
     public BigDecimal consultaSaldo(String numeroCartao){
-        Cartao cartao = repository.findById(numeroCartao).orElseThrow(() -> new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
+        Cartao cartao = repository.findById(numeroCartao).orElseThrow(() -> new CartaoNaoEncontradoException());
         return cartao.getSaldo();
     }
 

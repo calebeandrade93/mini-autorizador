@@ -1,7 +1,8 @@
 package br.com.vr.mini_autorizador.exceptions;
 
-public class CartaoNaoEncontradoException extends RuntimeException {
-    public CartaoNaoEncontradoException(String message) {
+public class CartaoInexistenteException extends RuntimeException {
+    public CartaoInexistenteException(String message) {
         super(message);
     }
+
 }

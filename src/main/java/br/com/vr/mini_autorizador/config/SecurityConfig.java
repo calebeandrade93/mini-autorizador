@@ -24,7 +24,6 @@ public class SecurityConfig {
     @Value("${spring.security.user.password}")
     private String userPassword;
 
-    //TODO: Pesquisar mais sobre isso.
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http

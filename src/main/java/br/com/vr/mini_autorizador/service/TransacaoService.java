@@ -2,9 +2,8 @@ package br.com.vr.mini_autorizador.service;
 
 import br.com.vr.mini_autorizador.dto.TransacaoDTO;
 import br.com.vr.mini_autorizador.entity.Cartao;
-import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontradoException;
+import br.com.vr.mini_autorizador.exceptions.CartaoInexistenteException;
 import br.com.vr.mini_autorizador.exceptions.SaldoInsuficienteException;
-import br.com.vr.mini_autorizador.exceptions.SenhaDoCartaoInvalidaException;
 import br.com.vr.mini_autorizador.repository.CartaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +26,7 @@ public class TransacaoService {
     public void processarTransacao(TransacaoDTO transacaoDTO){
 
         Cartao cartao = cartaoRepository.findByIdLock(transacaoDTO.numeroCartao()).orElseThrow(() ->
-                new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
+                new CartaoInexistenteException("CARTAO_INEXISTENTE"));
         cartaoService.validarSenha(cartao, transacaoDTO.senhaCartao());
 
         if(cartao.getSaldo().compareTo(transacaoDTO.valor()) < 0){
