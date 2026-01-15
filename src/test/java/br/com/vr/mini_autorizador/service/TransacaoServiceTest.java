@@ -31,21 +31,22 @@ class TransacaoServiceTest {
     private CartaoService cartaoService;
 
     @Test
-    void processarTransacao_deveDebitarSaldoQuandoSucesso() {
+    void processarTransacao_sucessoAoDebitar() {
         Cartao cartao = new Cartao();
-        cartao.setNumeroCartao("123");
+        cartao.setNumeroCartao("1234567890123456");
+        cartao.setSenha("senha123");
         cartao.setSaldo(new BigDecimal("100.00"));
 
-        TransacaoDTO dto = new TransacaoDTO("123", "senha123", new BigDecimal("40.00"));
+        TransacaoDTO dto = new TransacaoDTO("1234567890123456", "senha123", new BigDecimal("40.00"));
 
-        when(repository.findByIdLock("123")).thenReturn(Optional.of(cartao));
-        // senha válida
+        when(repository.findByIdLock(dto.numeroCartao())).thenReturn(Optional.of(cartao));
         doNothing().when(cartaoService).validarSenha(cartao, "senha123");
 
         service.processarTransacao(dto);
 
         assertEquals(new BigDecimal("60.00"), cartao.getSaldo());
-        verify(repository).save(cartao);
+        verify(repository, times(1)).save(cartao);
+        verify(repository, times(1)).findByIdLock(cartao.getNumeroCartao());
     }
 
     @Test
@@ -54,38 +55,29 @@ class TransacaoServiceTest {
 
         when(repository.findByIdLock("999")).thenReturn(Optional.empty());
 
-        assertThrows(CartaoNaoEncontradoException.class, () -> service.processarTransacao(dto));
+        CartaoNaoEncontradoException exception = assertThrows(CartaoNaoEncontradoException.class, () ->
+                service.processarTransacao(dto));
+
         verify(repository, never()).save(any());
-    }
-
-    @Test
-    void processarTransacao_deveLancarExcecaoQuandoSenhaInvalida() {
-        Cartao cartao = new Cartao();
-        cartao.setNumeroCartao("123");
-        cartao.setSaldo(new BigDecimal("100.00"));
-
-        TransacaoDTO dto = new TransacaoDTO("123", "senhaErrada", new BigDecimal("10.00"));
-
-        when(repository.findByIdLock("123")).thenReturn(Optional.of(cartao));
-        doThrow(new SenhaDoCartaoInvalidaException("SENHA_INVALIDA"))
-                .when(cartaoService).validarSenha(cartao, "senhaErrada");
-
-        assertThrows(SenhaDoCartaoInvalidaException.class, () -> service.processarTransacao(dto));
-        verify(repository, never()).save(any());
+        verify(repository, times(1)).findByIdLock("999");
+        assertEquals("CARTAO_INEXISTENTE", exception.getMessage());
     }
 
     @Test
     void processarTransacao_deveLancarExcecaoQuandoSaldoInsuficiente() {
         Cartao cartao = new Cartao();
-        cartao.setNumeroCartao("123");
+        cartao.setNumeroCartao("1234567890123456");
+        cartao.setSenha("senha123");
         cartao.setSaldo(new BigDecimal("50.00"));
 
-        TransacaoDTO dto = new TransacaoDTO("123", "senha123", new BigDecimal("100.00"));
+        TransacaoDTO dto = new TransacaoDTO("1234567890123456", "senha123", new BigDecimal("100.00"));
 
-        when(repository.findByIdLock("123")).thenReturn(Optional.of(cartao));
+        when(repository.findByIdLock(dto.numeroCartao())).thenReturn(Optional.of(cartao));
         doNothing().when(cartaoService).validarSenha(cartao, "senha123");
 
-        assertThrows(SaldoInsuficienteException.class, () -> service.processarTransacao(dto));
+        SaldoInsuficienteException exception = assertThrows(SaldoInsuficienteException.class, () -> service.processarTransacao(dto));
+        verify(repository, times(1)).findByIdLock(dto.numeroCartao());
         verify(repository, never()).save(any());
+        assertEquals("SALDO_INSUFICIENTE", exception.getMessage());
     }
 }

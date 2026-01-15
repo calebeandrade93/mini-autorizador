@@ -17,6 +17,7 @@ class CartaoDTOTest {
     private static ValidatorFactory factory;
     private static Validator validator;
 
+    //Configuração do validador para rodar os testes
     @BeforeAll
     static void setUpValidator() {
         factory = Validation.buildDefaultValidatorFactory();
@@ -29,51 +30,52 @@ class CartaoDTOTest {
     }
 
     @Test
-    void quandoValido_naoDeveConterViolacoes() {
-        var dto = new CartaoDTO("1234567890123456", "minhasenha");
-        Set<ConstraintViolation<CartaoDTO>> violations = validator.validate(dto);
-        assertTrue(violations.isEmpty(), "Não deve haver violações para DTO válido");
+    void quandoValido() {
+        CartaoDTO dto = new CartaoDTO("1234567890123456", "minhasenha");
+        Set<ConstraintViolation<CartaoDTO>> violacoes = validator.validate(dto);
+        
+        assertTrue(violacoes.isEmpty());
     }
 
     @Test
-    void quandoNumeroCartaoMenorQue16_deveConterViolacaoDeTamanho() {
-        var dto = new CartaoDTO("123", "senha");
-        Set<ConstraintViolation<CartaoDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v ->
-                "numeroCartao".equals(v.getPropertyPath().toString()) &&
-                        v.getMessage().contains("O cartão deve conter exatamente 16 dígitos")
-        ), "Deve conter mensagem de tamanho para numeroCartao");
+    void quandoNumeroCartaoMenorQue16() {
+        CartaoDTO dto = new CartaoDTO("123", "senha");
+        Set<ConstraintViolation<CartaoDTO>> violacoes = validator.validate(dto);
+        
+        assertFalse(violacoes.isEmpty());
+        assertTrue(violacoes.stream().anyMatch(violacao ->
+                "numeroCartao".equals(violacao.getPropertyPath().toString()) &&
+                        violacao.getMessage().contains("O cartão deve conter exatamente 16 dígitos")));
     }
 
     @Test
-    void quandoNumeroCartaoContemLetras_deveConterViolacaoDeFormato() {
-        var dto = new CartaoDTO("1234abcd5678efgh", "senha");
-        Set<ConstraintViolation<CartaoDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v ->
-                "numeroCartao".equals(v.getPropertyPath().toString()) &&
-                        v.getMessage().contains("O cartão deve conter apenas números")
-        ), "Deve conter mensagem de formato para numeroCartao");
+    void quandoNumeroCartaoContemLetras() {
+        CartaoDTO dto = new CartaoDTO("1234abcd5678efgh", "senha");
+        Set<ConstraintViolation<CartaoDTO>> violacoes = validator.validate(dto);
+
+        assertFalse(violacoes.isEmpty());
+        assertTrue(violacoes.stream().anyMatch(violacao ->
+                "numeroCartao".equals(violacao.getPropertyPath().toString()) &&
+                        violacao.getMessage().contains("O cartão deve conter apenas números")));
     }
 
     @Test
-    void quandoNumeroCartaoBlank_deveConterViolacaoNotBlank() {
-        var dto = new CartaoDTO("", "senha");
-        Set<ConstraintViolation<CartaoDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v ->
-                "numeroCartao".equals(v.getPropertyPath().toString())
-        ), "Deve haver violação em numeroCartao");
+    void quandoNumeroCartaoVazio() {
+        CartaoDTO dto = new CartaoDTO("", "senha");
+        Set<ConstraintViolation<CartaoDTO>> violacoes = validator.validate(dto);
+
+        assertFalse(violacoes.isEmpty());
+        assertTrue(violacoes.stream().anyMatch(violacao ->
+                "numeroCartao".equals(violacao.getPropertyPath().toString())));
     }
 
     @Test
-    void quandoSenhaBlank_deveConterViolacaoNotBlank() {
+    void quandoSenhaBlank() {
         var dto = new CartaoDTO("1234567890123456", "");
-        Set<ConstraintViolation<CartaoDTO>> violations = validator.validate(dto);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v ->
-                "senha".equals(v.getPropertyPath().toString())
-        ), "Deve haver violação em senha");
+        Set<ConstraintViolation<CartaoDTO>> violacoes = validator.validate(dto);
+
+        assertFalse(violacoes.isEmpty());
+        assertTrue(violacoes.stream().anyMatch(v ->
+                "senha".equals(v.getPropertyPath().toString())));
     }
 }

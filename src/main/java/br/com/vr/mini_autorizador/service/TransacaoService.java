@@ -26,7 +26,8 @@ public class TransacaoService {
     @Transactional
     public void processarTransacao(TransacaoDTO transacaoDTO){
 
-        Cartao cartao = cartaoRepository.findByIdLock(transacaoDTO.numeroCartao()).orElseThrow(() -> new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
+        Cartao cartao = cartaoRepository.findByIdLock(transacaoDTO.numeroCartao()).orElseThrow(() ->
+                new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
         cartaoService.validarSenha(cartao, transacaoDTO.senhaCartao());
 
         if(cartao.getSaldo().compareTo(transacaoDTO.valor()) < 0){

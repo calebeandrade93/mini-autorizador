@@ -1,6 +1,8 @@
 package br.com.vr.mini_autorizador.controller;
 
 import br.com.vr.mini_autorizador.dto.CartaoDTO;
+import br.com.vr.mini_autorizador.exceptions.CartaoExistenteException;
+import br.com.vr.mini_autorizador.exceptions.CartaoNaoEncontradoException;
 import br.com.vr.mini_autorizador.service.CartaoService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,7 +34,21 @@ class CartaoControllerTest {
         ResponseEntity<CartaoDTO> response = controller.criarCartao(request);
 
         assertEquals(201, response.getStatusCode().value());
-        assertSame(request, response.getBody());
+        assertEquals(request, response.getBody());
+        verify(cartaoService, times(1)).novoCartao(request);
+    }
+
+    @Test
+    void criarCartao_deveRetornarUnprocessableEntity_quandoCartaoExistente() {
+        CartaoDTO request = new CartaoDTO("1234567891234567", "senha123");
+        when(cartaoService.novoCartao(any(CartaoDTO.class)))
+                .thenThrow(new CartaoExistenteException(request));
+
+        CartaoExistenteException exception = assertThrows(CartaoExistenteException.class, () -> {
+            controller.criarCartao(request);
+        });
+
+        assertEquals(request, exception.getCartaoDTO());
         verify(cartaoService, times(1)).novoCartao(request);
     }
 
@@ -46,6 +62,20 @@ class CartaoControllerTest {
 
         assertEquals(200, response.getStatusCode().value());
         assertEquals(saldo, response.getBody());
+        verify(cartaoService, times(1)).consultaSaldo(numeroCartao);
+    }
+
+    @Test
+    void consultaSaldo_deveRetornar404_quandoCartaoInexistente() {
+        String numeroCartao = "1234567891234567";
+        when(cartaoService.consultaSaldo(numeroCartao))
+                .thenThrow(new CartaoNaoEncontradoException("CARTAO_INEXISTENTE"));
+
+        CartaoNaoEncontradoException exception = assertThrows(CartaoNaoEncontradoException.class, () -> {
+            controller.consultaSaldo(numeroCartao);
+        });
+
+        assertEquals("CARTAO_INEXISTENTE", exception.getMessage());
         verify(cartaoService, times(1)).consultaSaldo(numeroCartao);
     }
 }

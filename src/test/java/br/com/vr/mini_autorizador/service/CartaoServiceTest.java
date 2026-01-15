@@ -32,55 +32,62 @@ class CartaoServiceTest {
     private PasswordEncoder passwordEncoder;
 
     @Test
-    void novoCartao_deveCriarQuandoNaoExistente() {
-        CartaoDTO dto = new CartaoDTO("123456789", "senha123");
+    void novoCartao_sucessoAoCriar() {
+        CartaoDTO dto = new CartaoDTO("1234567890123456", "senha123");
 
         when(repository.findById(dto.numeroCartao())).thenReturn(Optional.empty());
-        when(passwordEncoder.encode(dto.senha())).thenReturn("encodedSenha");
+        when(passwordEncoder.encode(dto.senha())).thenReturn("senha123_encoded");
 
-        CartaoDTO result = service.novoCartao(dto);
+        CartaoDTO resultado = service.novoCartao(dto);
 
-        assertEquals(dto, result);
-        verify(repository).save(any(Cartao.class));
+        assertEquals(dto, resultado);
+        verify(repository, times(1)).findById("1234567890123456");
+        verify(repository, times(1)).save(any(Cartao.class));
         verify(passwordEncoder).encode("senha123");
     }
 
     @Test
-    void novoCartao_deveLancarExcecaoQuandoJaExistente() {
-        CartaoDTO dto = new CartaoDTO("123456789", "senha123");
-        Cartao existente = new Cartao();
-        existente.setNumeroCartao(dto.numeroCartao());
+    void novoCartao_deveLancarExcecaoQuandoExistente() {
+        CartaoDTO dto = new CartaoDTO("1234567890123456", "senha123");
+        Cartao novoCartao = new Cartao();
+        novoCartao.setNumeroCartao(dto.numeroCartao());
 
-        when(repository.findById(dto.numeroCartao())).thenReturn(Optional.of(existente));
+        when(repository.findById(dto.numeroCartao())).thenReturn(Optional.of(novoCartao));
 
         assertThrows(CartaoExistenteException.class, () -> service.novoCartao(dto));
-        verify(repository, never()).save(any());
+        verify(repository, never()).save(any(Cartao.class));
+        verify(repository, times(1)).findById(novoCartao.getNumeroCartao());
     }
 
     @Test
-    void consultaSaldo_deveRetornarSaldoQuandoCartaoExiste() {
-        String numero = "123456789";
-        Cartao cartao = new Cartao();
-        cartao.setNumeroCartao(numero);
-        cartao.setSaldo(new BigDecimal("250.00"));
+    void consultaSaldo_sucessoAoConsultar() {
+        Cartao novoCartao = new Cartao();
+        novoCartao.setNumeroCartao("1234567890123456");
+        novoCartao.setSenha("senha123");
+        novoCartao.setSaldo(new BigDecimal("250.00"));
 
-        when(repository.findById(numero)).thenReturn(Optional.of(cartao));
+        when(repository.findById(novoCartao.getNumeroCartao())).thenReturn(Optional.of(novoCartao));
 
-        BigDecimal saldo = service.consultaSaldo(numero);
+        BigDecimal saldo = service.consultaSaldo(novoCartao.getNumeroCartao());
 
         assertEquals(new BigDecimal("250.00"), saldo);
+        verify(repository, times(1)).findById(novoCartao.getNumeroCartao());
     }
 
     @Test
     void consultaSaldo_deveLancarExcecaoQuandoCartaoNaoExiste() {
-        String numero = "999";
-        when(repository.findById(numero)).thenReturn(Optional.empty());
+        CartaoDTO dto = new CartaoDTO("0000000000000000", "senha123");
+        when(repository.findById(dto.numeroCartao())).thenReturn(Optional.empty());
 
-        assertThrows(CartaoNaoEncontradoException.class, () -> service.consultaSaldo(numero));
+        CartaoNaoEncontradoException exception = assertThrows(CartaoNaoEncontradoException.class, () ->
+                service.consultaSaldo(dto.numeroCartao()));
+
+        assertEquals("CARTAO_INEXISTENTE", exception.getMessage());
+        verify(repository, times(1)).findById(dto.numeroCartao());
     }
 
     @Test
-    void validarSenha_devePassarQuandoSenhaCorreta() {
+    void validarSenha_sucessoAoValidar() {
         Cartao cartao = new Cartao();
         cartao.setSenha("encodedSenha");
 
@@ -96,7 +103,9 @@ class CartaoServiceTest {
 
         when(passwordEncoder.matches("senhaErrada", "encodedSenha")).thenReturn(false);
 
-        assertThrows(SenhaDoCartaoInvalidaException.class,
-                () -> service.validarSenha(cartao, "senhaErrada"));
+        SenhaDoCartaoInvalidaException exception = assertThrows(SenhaDoCartaoInvalidaException.class, () ->
+                service.validarSenha(cartao, "senhaErrada"));
+
+        assertEquals("SENHA_INVALIDA", exception.getMessage());
     }
 }

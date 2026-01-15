@@ -1,7 +1,6 @@
 package br.com.vr.mini_autorizador.exceptions;
 
 import br.com.vr.mini_autorizador.dto.CartaoDTO;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,7 +22,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CartaoNaoEncontradoException.class)
     public ResponseEntity<String> handleCartaoNaoEncontrado(CartaoNaoEncontradoException ex) {
-        return ResponseEntity.status(422).body(ex.getMessage());
+        return ResponseEntity.status(404).body(ex.getMessage());
     }
 
     @ExceptionHandler(SenhaDoCartaoInvalidaException.class)

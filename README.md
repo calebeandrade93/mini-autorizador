@@ -27,7 +27,7 @@ Neste desafio, eu apliquei alguns dos conceitos e boas práticas que adqueri dur
 | Endpoint | Método | Descrição | Resposta Esperada | Erros Possíveis                                                                                     |
 |----------|--------|-----------|-------------------|-----------------------------------------------------------------------------------------------------|
 | /cartoes | POST | Cria um novo cartão com saldo inicial de R$500.00 | 201 Created com detalhes do cartão | 422 Unprocessable Entity (cartão já existe), 401 Unauthorized                                       |
-| /cartoes/{numeroCartao} | GET | Obtém o saldo do cartão especificado | 200 OK com saldo do cartão | 422 Unprocessable Entity (cartão não existe), 401 Unauthorized                                                 |
+| /cartoes/{numeroCartao} | GET | Obtém o saldo do cartão especificado | 200 OK com saldo do cartão | 404 Not Found (cartão não existe), 401 Unauthorized                                                 |
 | /transacoes | POST | Autoriza uma transação para o cartão especificado | 201 Created com mensagem "OK" | 422 Unprocessable Entity (CARTAO_INEXISTENTE, SENHA_INVALIDA, SALDO_INSUFICIENTE), 401 Unauthorized |
 
 ## Execução da aplicação
@@ -41,7 +41,7 @@ Para executar a aplicação, siga os passos abaixo:
 4. Navegue até o diretório 'docker' ```cd ./docker``` 
 5. Execute o comando abaixo para iniciar os containers da aplicação e do banco de dados:
 ```bash
-   docker-compose up --build
+ docker-compose up --build
    ```
 6. aplicação estará disponível em `http://localhost:8080`.
 7. (Opcional) Você pode acessar via Swagger UI em `http://localhost:8080/swagger-ui/index.html` para explorar e testar os endpoints da API.
