@@ -34,24 +34,22 @@ Neste desafio, eu apliquei alguns dos conceitos e boas práticas que adqueri dur
 Para executar a aplicação, siga os passos abaixo:
 1. Certifique-se de ter o Docker instalado na sua máquina.
 2. Clone este repositório para sua máquina local.
-```bash 
-git clone https://github.com/calebeandrade93/mini-autorizador.git```
+```bash
+ git clone https://github.com/calebeandrade93/mini-autorizador.git
+```
 3. Navegue até o diretório raiz do projeto.
 4. Navegue até o diretório 'docker' ```cd ./docker``` 
 5. Execute o comando abaixo para iniciar os containers da aplicação e do banco de dados:
-6. ```bash
+```bash
    docker-compose up --build
    ```
-7. aplicação estará disponível em `http://localhost:8080`.
-8. (Opcional) Você pode acessar via Swagger UI em `http://localhost:8080/swagger-ui/index.html` para explorar e testar os endpoints da API.
-9. (Opcional) Download da Collection para utilizar em um client de preferência(Postman/Insomnia), o arquivo se encontra na pasta 'collection' na raiz do projeto.
+6. aplicação estará disponível em `http://localhost:8080`.
+7. (Opcional) Você pode acessar via Swagger UI em `http://localhost:8080/swagger-ui/index.html` para explorar e testar os endpoints da API.
+8. (Opcional) Download da Collection para utilizar em um client de preferência(Postman/Insomnia), o arquivo se encontra na pasta 'collection' na raiz do projeto.
 
 ## Cobertura de testes
-Rode o comando abaixo para gerar o relatório de cobertura de testes:
+Execute o comando abaixo para gerar o relatório de cobertura de testes:
 ```bash
 ./mvnw clean verify
 ```
 Após a execução, o relatório estará disponível em `target/site/jacoco/index.html`.
-
-## Autor
-Calebe Andrade - [LinkedIn](https://www.linkedin.com/in/calebeandrade93/)
